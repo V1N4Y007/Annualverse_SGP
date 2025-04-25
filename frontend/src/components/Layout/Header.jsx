@@ -41,6 +41,9 @@ function Header() {
             <li className="nav-item">
               <Link to="/reports" className="nav-link">Reports</Link>
             </li>
+            <li className="nav-item">
+              <Link to="/reports/generate" className="nav-link">Generate Annual Report</Link>
+            </li>
             {(userRole === 'admin' || userRole === 'department_head') && (
               <li className="nav-item">
                 <Link to="/reports/upload" className="nav-link">Upload Report</Link>

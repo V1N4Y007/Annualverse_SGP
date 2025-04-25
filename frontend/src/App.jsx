@@ -9,6 +9,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import ReportList from './components/Reports/ReportList';
 import ReportUpload from './components/Reports/ReportUpload';
 import ReportView from './components/Reports/ReportView';
+import ReportGenerator from './components/Reports/ReportGenerator';
 import UserProfile from './components/Profile/UserProfile';
 import Header from './components/Layout/Header';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
@@ -61,6 +62,12 @@ function App() {
           <Route path="/profile" element={
             <ProtectedRoute>
               <UserProfile />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/reports/generate" element={
+            <ProtectedRoute>
+              <ReportGenerator />
             </ProtectedRoute>
           } />
         </Routes>
