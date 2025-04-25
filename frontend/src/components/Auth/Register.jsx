@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { ROLES } from '../../firebase';
 
-function Register() {
+const Register = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [role, setRole] = useState(ROLES.FACULTY);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
   const navigate = useNavigate();
+  const { register } = useAuth();
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
@@ -24,48 +22,36 @@ function Register() {
     try {
       setError('');
       setLoading(true);
-      await register(email, password, displayName, role);
+      await register(email, password, name);
       navigate('/');
     } catch (error) {
-      console.error(error);
-      
-      // Handle specific Firebase auth errors
-      if (error.code === 'auth/configuration-not-found') {
-        setError('Authentication service is not properly configured. Please make sure Firebase is set up correctly.');
-      } else if (error.code === 'auth/email-already-in-use') {
-        setError('Email already in use. Please use a different email or login.');
-      } else if (error.code === 'auth/invalid-email') {
-        setError('Invalid email format. Please enter a valid email address.');
-      } else if (error.code === 'auth/weak-password') {
-        setError('Password is too weak. Please use a stronger password (at least 6 characters).');
-      } else {
-        setError(error.message || 'Failed to create an account. Please try again later.');
-      }
+      console.error('Registration error:', error);
+      setError('Failed to create an account. ' + error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="container">
-      <div className="row justify-content-center mt-5">
+    <div className="container mt-5">
+      <div className="row justify-content-center">
         <div className="col-md-6">
-          <div className="card shadow">
-            <div className="card-body p-5">
-              <h2 className="text-center mb-4">Annual Report Portal</h2>
-              <h4 className="text-center mb-4">Register</h4>
-              
+          <div className="card">
+            <div className="card-header bg-primary text-white">
+              <h3 className="text-center mb-0">Register</h3>
+            </div>
+            <div className="card-body">
               {error && <div className="alert alert-danger">{error}</div>}
               
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="displayName" className="form-label">Full Name</label>
+                  <label htmlFor="name" className="form-label">Full Name</label>
                   <input
                     type="text"
-                    id="displayName"
                     className="form-control"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
                   />
                 </div>
@@ -74,8 +60,8 @@ function Register() {
                   <label htmlFor="email" className="form-label">Email</label>
                   <input
                     type="email"
-                    id="email"
                     className="form-control"
+                    id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -83,26 +69,11 @@ function Register() {
                 </div>
                 
                 <div className="mb-3">
-                  <label htmlFor="role" className="form-label">Role</label>
-                  <select
-                    id="role"
-                    className="form-select"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    required
-                  >
-                    <option value={ROLES.FACULTY}>Faculty</option>
-                    <option value={ROLES.DEPARTMENT_HEAD}>Department Head</option>
-                    <option value={ROLES.ADMIN}>Administrator</option>
-                  </select>
-                </div>
-                
-                <div className="mb-3">
                   <label htmlFor="password" className="form-label">Password</label>
                   <input
                     type="password"
-                    id="password"
                     className="form-control"
+                    id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -113,34 +84,34 @@ function Register() {
                   <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
                   <input
                     type="password"
-                    id="confirmPassword"
                     className="form-control"
+                    id="confirmPassword"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                   />
                 </div>
                 
-                <button 
-                  type="submit" 
-                  className="btn btn-primary w-100 mt-3" 
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Registering...
-                    </>
-                  ) : (
-                    'Register'
-                  )}
-                </button>
+                <div className="d-grid gap-2">
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Creating Account...
+                      </>
+                    ) : (
+                      'Register'
+                    )}
+                  </button>
+                </div>
               </form>
-
-              <div className="mt-3 text-center">
-                <p>
-                  Already have an account? <Link to="/login">Login</Link>
-                </p>
+              
+              <div className="text-center mt-3">
+                <p>Already have an account? <Link to="/login">Sign In</Link></p>
               </div>
             </div>
           </div>
@@ -148,6 +119,6 @@ function Register() {
       </div>
     </div>
   );
-}
+};
 
 export default Register;

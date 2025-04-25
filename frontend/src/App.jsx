@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Login from './components/Auth/Login';
-import Home from './components/Home';
+import ReportGenerator from './components/Reports/ReportGenerator';
 import Header from './components/Layout/Header';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 
@@ -18,12 +18,11 @@ function App() {
             
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/home" element={<Home />} />
+              <Route path="/" element={<ReportGenerator />} />
             </Route>
             
             {/* Default redirects */}
-            <Route path="/" element={<Navigate to="/home" />} />
-            <Route path="*" element={<Navigate to="/home" />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
       </div>

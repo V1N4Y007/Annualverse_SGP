@@ -7,7 +7,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleHomeClick = () => {
-    navigate('/home');
+    navigate('/');
   };
 
   const handleLoginClick = () => {
@@ -52,7 +52,7 @@ const Header = () => {
           <div className="d-flex align-items-center">
             {currentUser && (
               <span className="text-white me-3">
-                {currentUser.displayName || currentUser.email}
+                {currentUser.displayName || currentUser.email || 'User'}
               </span>
             )}
             <div>

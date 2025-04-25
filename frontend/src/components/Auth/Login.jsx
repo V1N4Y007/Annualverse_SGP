@@ -3,30 +3,41 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signInWithGoogle, currentUser } = useAuth();
   const navigate = useNavigate();
+  const { login, currentUser } = useAuth();
 
-  // Redirect if user is already logged in
+  // Redirect if already logged in
   useEffect(() => {
     if (currentUser) {
-      navigate('/home');
+      navigate('/');
     }
   }, [currentUser, navigate]);
 
-  const handleGoogleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    
     try {
       setError('');
       setLoading(true);
-      await signInWithGoogle();
-      navigate('/home');
+      
+      await login(email, password);
+      navigate('/');
     } catch (error) {
-      console.error('Google Sign-in failed:', error);
-      setError('Failed to sign in with Google. Please try again.');
+      console.error('Login error:', error);
+      setError('Failed to log in. Please check your credentials.');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Demo login function - for easy testing
+  const handleDemoLogin = () => {
+    setEmail('demo@example.com');
+    setPassword('password123');
   };
 
   return (
@@ -40,22 +51,56 @@ const Login = () => {
             <div className="card-body">
               {error && <div className="alert alert-danger">{error}</div>}
               
-              <div className="d-grid gap-2">
-                <button 
-                  className="btn btn-danger"
-                  onClick={handleGoogleLogin}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Signing in...
-                    </>
-                  ) : (
-                    <><i className="bi bi-google me-2"></i>Sign in with Google</>
-                  )}
-                </button>
-              </div>
+              <form onSubmit={handleLogin}>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label">Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="mb-3">
+                  <label htmlFor="password" className="form-label">Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="d-grid gap-2">
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Signing in...
+                      </>
+                    ) : (
+                      'Sign In'
+                    )}
+                  </button>
+                  
+                  <button 
+                    type="button" 
+                    className="btn btn-outline-secondary"
+                    onClick={handleDemoLogin}
+                  >
+                    Use Demo Credentials
+                  </button>
+                </div>
+              </form>
               
               <div className="text-center mt-4">
                 <p>Annual Report Portal for Institute Departments</p>
