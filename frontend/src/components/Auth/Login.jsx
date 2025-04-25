@@ -34,10 +34,21 @@ const Login = () => {
     }
   };
 
-  // Demo login function - for easy testing
-  const handleDemoLogin = () => {
-    setEmail('demo@example.com');
-    setPassword('password123');
+  // Demo login function - directly logs the user in without Firebase
+  const handleDemoLogin = async () => {
+    try {
+      setError('');
+      setLoading(true);
+      
+      // Instead of using Firebase auth, we'll just navigate to the dashboard
+      // since we've disabled auth checks in development mode
+      navigate('/');
+    } catch (error) {
+      console.error('Demo login error:', error);
+      setError('Failed to log in with demo account.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

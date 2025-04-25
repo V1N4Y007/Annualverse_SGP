@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import ReportGenerator from './components/Reports/ReportGenerator';
+import Dashboard from './components/Dashboard/Dashboard';
 import Header from './components/Layout/Header';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 
@@ -20,7 +21,8 @@ function App() {
             
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<ReportGenerator />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/report/new" element={<ReportGenerator />} />
             </Route>
             
             {/* Default redirects */}

@@ -6,6 +6,7 @@ const Header = () => {
   const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
 
+  // Make sure the Home button always directs to the dashboard
   const handleHomeClick = () => {
     navigate('/');
   };

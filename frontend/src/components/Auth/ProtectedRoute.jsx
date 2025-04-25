@@ -5,6 +5,13 @@ import { useAuth } from '../../contexts/AuthContext';
 const ProtectedRoute = () => {
   const { currentUser, loading } = useAuth();
   
+  // For testing purposes, bypass authentication check temporarily
+  // This will allow you to access the dashboard without login
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Development mode: Bypassing authentication check');
+    return <Outlet />;
+  }
+  
   // If the authentication is still loading, show a loading spinner or message
   if (loading) {
     return (
