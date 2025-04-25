@@ -5,7 +5,11 @@ import {
   createUserWithEmailAndPassword, 
   signOut,
   onAuthStateChanged,
-  updateProfile
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult
 } from "firebase/auth";
 import { 
   getFirestore, 
@@ -47,6 +51,9 @@ const ROLES = {
   FACULTY: 'faculty'
 };
 
+// Initialize Google Auth Provider
+const googleProvider = new GoogleAuthProvider();
+
 export {
   auth,
   db,
@@ -56,6 +63,11 @@ export {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  GoogleAuthProvider,
+  googleProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   collection,
   doc,
   getDoc,

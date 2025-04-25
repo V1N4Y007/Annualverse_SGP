@@ -1,36 +1,28 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-function ProtectedRoute({ children, requiredRole }) {
-  const { currentUser, userRole, loading } = useAuth();
-
+const ProtectedRoute = () => {
+  const { currentUser, loading } = useAuth();
+  
+  // If the authentication is still loading, show a loading spinner or message
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center min-vh-100">
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
     );
   }
-
+  
+  // If user is not authenticated, redirect to login
   if (!currentUser) {
     return <Navigate to="/login" />;
   }
-
-  // If a specific role is required for the route
-  if (requiredRole && userRole !== requiredRole) {
-    return (
-      <div className="container mt-5">
-        <div className="alert alert-danger" role="alert">
-          You don't have permission to access this page.
-        </div>
-      </div>
-    );
-  }
-
-  return children;
-}
+  
+  // If authenticated, show the child routes
+  return <Outlet />;
+};
 
 export default ProtectedRoute;

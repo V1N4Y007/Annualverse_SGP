@@ -1,99 +1,64 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { signInWithGoogle, currentUser } = useAuth();
   const navigate = useNavigate();
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/home');
+    }
+  }, [currentUser, navigate]);
+
+  const handleGoogleLogin = async () => {
     try {
       setError('');
       setLoading(true);
-      await login(email, password);
-      navigate('/');
+      await signInWithGoogle();
+      navigate('/home');
     } catch (error) {
-      console.error(error);
-      
-      // Handle specific Firebase auth errors
-      if (error.code === 'auth/configuration-not-found') {
-        setError('Authentication service is not properly configured. Please make sure Firebase is set up correctly.');
-      } else if (error.code === 'auth/invalid-credential') {
-        setError('Invalid email or password. Please try again.');
-      } else if (error.code === 'auth/user-not-found') {
-        setError('No account found with this email. Please register first.');
-      } else if (error.code === 'auth/wrong-password') {
-        setError('Invalid password. Please try again.');
-      } else {
-        setError(error.message || 'Failed to sign in. Please try again later.');
-      }
+      console.error('Google Sign-in failed:', error);
+      setError('Failed to sign in with Google. Please try again.');
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="container">
-      <div className="row justify-content-center mt-5">
+    <div className="container mt-5">
+      <div className="row justify-content-center">
         <div className="col-md-6">
-          <div className="card shadow">
-            <div className="card-body p-5">
-              <h2 className="text-center mb-4">Annual Report Portal</h2>
-              <h4 className="text-center mb-4">Login</h4>
-              
+          <div className="card">
+            <div className="card-header bg-primary text-white">
+              <h3 className="text-center mb-0">Login</h3>
+            </div>
+            <div className="card-body">
               {error && <div className="alert alert-danger">{error}</div>}
               
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="email" className="form-label">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    className="form-control"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Password</label>
-                  <input
-                    type="password"
-                    id="password"
-                    className="form-control"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                
+              <div className="d-grid gap-2">
                 <button 
-                  type="submit" 
-                  className="btn btn-primary w-100 mt-3" 
+                  className="btn btn-danger"
+                  onClick={handleGoogleLogin}
                   disabled={loading}
                 >
                   {loading ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Logging in...
+                      Signing in...
                     </>
                   ) : (
-                    'Login'
+                    <><i className="bi bi-google me-2"></i>Sign in with Google</>
                   )}
                 </button>
-              </form>
-
-              <div className="mt-3 text-center">
-                <p>
-                  Need an account? <Link to="/register">Register</Link>
-                </p>
+              </div>
+              
+              <div className="text-center mt-4">
+                <p>Annual Report Portal for Institute Departments</p>
               </div>
             </div>
           </div>
@@ -101,6 +66,6 @@ function Login() {
       </div>
     </div>
   );
-}
+};
 
 export default Login;

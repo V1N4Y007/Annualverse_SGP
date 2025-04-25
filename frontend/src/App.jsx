@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import ReportGenerator from './components/Reports/ReportGenerator';
-import SimpleHeader from './components/Layout/SimpleHeader';
+import { AuthProvider } from './contexts/AuthContext';
+import Login from './components/Auth/Login';
+import Home from './components/Home';
+import Header from './components/Layout/Header';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
 
 function App() {
-  const [user, setUser] = useState(null);
-  
-  const login = () => {
-    setUser({
-      displayName: 'Demo User',
-      email: 'user@example.com'
-    });
-  };
-  
-  const logout = () => {
-    setUser(null);
-  };
-
   return (
-    <div className="app">
-      <SimpleHeader user={user} login={login} logout={logout} />
-      <div className="container-fluid mt-4">
-        <Routes>
-          <Route path="/" element={<ReportGenerator user={user} />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+    <AuthProvider>
+      <div className="app">
+        <Header />
+        <div className="container-fluid mt-4">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/home" element={<Home />} />
+            </Route>
+            
+            {/* Default redirects */}
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="*" element={<Navigate to="/home" />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </AuthProvider>
   );
 }
 

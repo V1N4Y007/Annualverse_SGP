@@ -1,109 +1,67 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   auth, 
-  db, 
   onAuthStateChanged, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut,
-  updateProfile, 
-  doc, 
-  getDoc, 
-  setDoc, 
-  ROLES 
+  signOut as firebaseSignOut,
+  googleProvider,
+  signInWithPopup
 } from '../firebase';
 
+// Create the context
 const AuthContext = createContext();
 
-export function useAuth() {
+// Custom hook to use the auth context
+export const useAuth = () => {
   return useContext(AuthContext);
-}
+};
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  async function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        // Fetch user role from Firestore
-        const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
-        if (userDoc.exists()) {
-          setUserRole(userDoc.data().role);
-        }
-        return userCredential;
-      });
-  }
+  // Sign in with Google
+  const signInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      return result.user;
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      throw error;
+    }
+  };
 
-  async function register(email, password, displayName, role) {
-    return createUserWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        // Update profile
-        await updateProfile(userCredential.user, { displayName });
-        
-        // Create user document in Firestore
-        await setDoc(doc(db, 'users', userCredential.user.uid), {
-          email,
-          displayName,
-          role: role || ROLES.FACULTY, // Default role
-          createdAt: new Date()
-        });
-        
-        setUserRole(role || ROLES.FACULTY);
-        return userCredential;
-      });
-  }
+  // Sign out
+  const signOut = async () => {
+    try {
+      await firebaseSignOut(auth);
+    } catch (error) {
+      console.error("Sign out error:", error);
+      throw error;
+    }
+  };
 
-  function logout() {
-    return signOut(auth);
-  }
-
+  // Observer for auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
-      
-      if (user) {
-        // Fetch user role from Firestore
-        try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (userDoc.exists()) {
-            setUserRole(userDoc.data().role);
-          } else {
-            // Create user document if it doesn't exist (for users created via other methods)
-            await setDoc(doc(db, 'users', user.uid), {
-              email: user.email,
-              displayName: user.displayName || '',
-              role: ROLES.FACULTY, // Default role
-              createdAt: new Date()
-            });
-            setUserRole(ROLES.FACULTY);
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      } else {
-        setUserRole(null);
-      }
-      
       setLoading(false);
     });
 
+    // Cleanup function
     return unsubscribe;
   }, []);
 
+  // Context value
   const value = {
     currentUser,
-    userRole,
-    login,
-    register,
-    logout,
+    signInWithGoogle,
+    signOut,
     loading
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
-}
+};
