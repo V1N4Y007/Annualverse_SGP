@@ -28,7 +28,19 @@ function Register() {
       navigate('/');
     } catch (error) {
       console.error(error);
-      setError(error.message || 'Failed to create an account');
+      
+      // Handle specific Firebase auth errors
+      if (error.code === 'auth/configuration-not-found') {
+        setError('Authentication service is not properly configured. Please make sure Firebase is set up correctly.');
+      } else if (error.code === 'auth/email-already-in-use') {
+        setError('Email already in use. Please use a different email or login.');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Invalid email format. Please enter a valid email address.');
+      } else if (error.code === 'auth/weak-password') {
+        setError('Password is too weak. Please use a stronger password (at least 6 characters).');
+      } else {
+        setError(error.message || 'Failed to create an account. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }

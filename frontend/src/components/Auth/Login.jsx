@@ -20,7 +20,19 @@ function Login() {
       navigate('/');
     } catch (error) {
       console.error(error);
-      setError(error.message || 'Failed to sign in');
+      
+      // Handle specific Firebase auth errors
+      if (error.code === 'auth/configuration-not-found') {
+        setError('Authentication service is not properly configured. Please make sure Firebase is set up correctly.');
+      } else if (error.code === 'auth/invalid-credential') {
+        setError('Invalid email or password. Please try again.');
+      } else if (error.code === 'auth/user-not-found') {
+        setError('No account found with this email. Please register first.');
+      } else if (error.code === 'auth/wrong-password') {
+        setError('Invalid password. Please try again.');
+      } else {
+        setError(error.message || 'Failed to sign in. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
