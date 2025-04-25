@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Login = () => {
@@ -103,6 +103,7 @@ const Login = () => {
               </form>
               
               <div className="text-center mt-4">
+                <p>Don't have an account? <Link to="/register">Register</Link></p>
                 <p>Annual Report Portal for Institute Departments</p>
               </div>
             </div>
